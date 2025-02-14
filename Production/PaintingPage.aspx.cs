@@ -79,14 +79,38 @@ public partial class Production_PaintingPage : System.Web.UI.Page
            STUFF((SELECT ',' + CAST(Discription AS NVARCHAR)
            FROM tbl_NewProductionDTLS t5
            WHERE  t5.RowMaterial = t1.RowMaterial And t5.Stage = t1.Stage And t5.OANumber = t1.OANumber
-           FOR XML PATH('')), 1, 1, '') AS Disc
+           FOR XML PATH('')), 1, 1, '') AS Disc,
+
+           CASE 
+              WHEN STUFF((SELECT ',' + CAST(TotalQTY AS NVARCHAR)
+                            FROM tbl_NewProductionDTLS AS t3
+                            WHERE t3.RowMaterial = t1.RowMaterial 
+                              AND t3.Stage = t1.Stage 
+                              AND t3.OANumber = t1.OANumber
+                            FOR XML PATH('')), 1, 1, '') = 
+                     STUFF((SELECT ',' + CAST(InwardQTY AS NVARCHAR)
+                            FROM tbl_NewProductionDTLS AS t4
+                            WHERE t4.RowMaterial = t1.RowMaterial 
+                              AND t4.Stage = t1.Stage 
+                              AND t4.OANumber = t1.OANumber
+                            FOR XML PATH('')), 1, 1, '') 
+              THEN 'Complete'
+		      WHEN (
+					        SELECT SUM(CAST(InwardQTY AS INT))
+					        FROM tbl_NewProductionDTLS AS t4
+					        WHERE t4.RowMaterial = t1.RowMaterial 
+					          AND t4.Stage = t1.Stage 
+					          AND t4.OANumber = t1.OANumber
+			         ) > 0
+		      THEN 'In-Process'
+              ELSE 'Pending'
+           END AS Status
 
            FROM tbl_NewProductionDTLS AS t1
            WHERE " + " t1.ProjectCode = '" + Session["ProjectCode"].ToString() + "' and t1.Stage = '" + Session["Stage"].ToString() + "' " +
           " GROUP BY t1.OANumber, t1.Stage, RowMaterial,RawMateReqQTY,RawMateRemainingReqQty, t1.ProjectCode,t1.ProjectName " +
           " order by SentQTy desc, RemainingQTy desc ");
 
-        dt.Columns.Add("ProductStatus");
 
         txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
         txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
@@ -107,15 +131,19 @@ public partial class Production_PaintingPage : System.Web.UI.Page
                 Label lblProdStatus = e.Row.FindControl("lblProdStatus") as Label;
                 Label lblRemainingSet = e.Row.FindControl("lblRemainingSet") as Label;
 
-                if (lblReqQty != null || lblSentQty != null)
+                if (lblReqQty.Text == lblSentQty.Text)
                 {
-
-                    if (lblReqQty.Text == lblSentQty.Text)
+                    lblProdStatus.Text = "Completed";
+                    lblProdStatus.ForeColor = System.Drawing.Color.Green;
+                }
+                else
+                {
+                    if (lblProdStatus.Text == "Complete")
                     {
-                        lblProdStatus.Text = "Completed";
-                        lblProdStatus.ForeColor = System.Drawing.Color.Green;
+                        lblProdStatus.Text = "Read for Quality";
+                        lblProdStatus.ForeColor = System.Drawing.Color.Blue;
                     }
-                    else if (lblRemainingSet.Text != "0")
+                    else if (lblProdStatus.Text == "In-Process")
                     {
                         lblProdStatus.Text = "In-Process";
                         lblProdStatus.ForeColor = System.Drawing.Color.Orange;
@@ -160,7 +188,7 @@ public partial class Production_PaintingPage : System.Web.UI.Page
             txtinwardqty.Text = divVal.ToString();
             txttotalqty.Text = TotalQty;
             txtJobList.Text = JobNoList;
-           
+
             // txtpending.Text = "0";
             txtoutwardqty.Text = TotalQty;
 
@@ -422,7 +450,7 @@ public partial class Production_PaintingPage : System.Web.UI.Page
                         lblStatus.ForeColor = System.Drawing.Color.Green;
                         checkBox.Checked = true;
                     }
-                    else if(InwardQty >= QtyPerSet)
+                    else if (InwardQty >= QtyPerSet)
                     {
                         lblStatus.Text = "In-Process";
                         lblStatus.ForeColor = System.Drawing.Color.Orange;

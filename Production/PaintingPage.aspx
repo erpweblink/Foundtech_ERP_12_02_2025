@@ -360,7 +360,7 @@
                                                     </asp:TemplateField>
                                                     <asp:TemplateField HeaderText="Product Status" HeaderStyle-CssClass="gvhead">
                                                         <ItemTemplate>
-                                                            <asp:Label ID="lblProdStatus" runat="server" Text='<%#Eval("ProductStatus")%>'></asp:Label>
+                                                            <asp:Label ID="lblProdStatus" runat="server" Text='<%#Eval("Status")%>'></asp:Label>
                                                         </ItemTemplate>
                                                     </asp:TemplateField>
                                                     <asp:TemplateField HeaderText="Total Qty" HeaderStyle-CssClass="gvhead" Visible="false">
@@ -577,7 +577,7 @@
                         <div class="col-md-11">
                             <div style="background-color: #fefefe; width: 396px; height: 558px; padding: 21px 7px; border: 3px solid black;">
                                 <div style="background-color: #01a9ac; height: 52px; width: 373px; margin-top: -15px;">
-                                    <h4 style="padding: 8px; color: #fff;">Send to Dispatch 
+                                    <h4 style="padding: 8px; color: #fff;">Send to Quality 
                                     <button type="button" id="Closepophistory1" class="btnclose" style="display: inline-block;" data-dismiss="modal">Close</button></h4>
                                 </div>
                                 <br />

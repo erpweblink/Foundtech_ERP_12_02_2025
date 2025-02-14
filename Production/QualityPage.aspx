@@ -362,7 +362,7 @@
                                                     </asp:TemplateField>
                                                     <asp:TemplateField HeaderText="Product Status" HeaderStyle-CssClass="gvhead">
                                                         <ItemTemplate>
-                                                            <asp:Label ID="lblProdStatus" runat="server" Text='<%#Eval("ProductStatus")%>'></asp:Label>
+                                                            <asp:Label ID="lblProdStatus" runat="server" Text='<%#Eval("Status")%>'></asp:Label>
                                                         </ItemTemplate>
                                                     </asp:TemplateField>
                                                     <asp:TemplateField HeaderText="Total Qty" HeaderStyle-CssClass="gvhead" Visible="false">
