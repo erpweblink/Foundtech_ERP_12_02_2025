@@ -88,6 +88,10 @@ public partial class Production_QualityPage : System.Web.UI.Page
 
         dt.Columns.Add("ProductStatus");
 
+        txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
+        txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
+        txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
+
         GroupRecords.DataSource = dt;
         GroupRecords.DataBind();
     }

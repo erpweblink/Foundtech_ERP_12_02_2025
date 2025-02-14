@@ -270,6 +270,22 @@
             </xs:sequence>
           </xs:complexType>
         </xs:element>
+        <xs:element name="Outwardreport">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ProjectCode" msdata:Caption="InwardNo" type="xs:string" minOccurs="0" />
+              <xs:element name="ProjectName" msdata:Caption="CompanyName" type="xs:string" minOccurs="0" />
+              <xs:element name="ProductName" type="xs:string" minOccurs="0" />
+              <xs:element name="TotalSet" type="xs:string" minOccurs="0" />
+              <xs:element name="InwardSet" type="xs:string" minOccurs="0" />
+              <xs:element name="OutwardSet" type="xs:string" minOccurs="0" />
+              <xs:element name="RemainingSet" type="xs:string" minOccurs="0" />
+              <xs:element name="SentDate" type="xs:string" minOccurs="0" />
+              <xs:element name="CreatedBy" type="xs:string" minOccurs="0" />
+              <xs:element name="Remark" msdata:Caption="ProductStatus" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
       </xs:choice>
     </xs:complexType>
   </xs:element>

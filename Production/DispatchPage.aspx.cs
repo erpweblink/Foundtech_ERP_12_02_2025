@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.Reporting.WebForms;
 
 public partial class Production_DispatchPage : System.Web.UI.Page
@@ -77,6 +78,10 @@ public partial class Production_DispatchPage : System.Web.UI.Page
             " GROUP BY OANumber, Stage, RowMaterial, RawMateReqQTY, RawMateRemainingReqQty, ProjectCode, ProjectName " +
             " order by SentQTy desc, RemainingQTy desc ");
 
+        txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
+        txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
+        txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
+
         dt.Columns.Add("ProductStatus");
         GroupRecords.DataSource = dt;
         GroupRecords.DataBind();
@@ -137,10 +142,12 @@ public partial class Production_DispatchPage : System.Web.UI.Page
             string InwardSet = ((Label)row.FindControl("lblRemainReqQty")).Text;
             string RemainreqQty = ((Label)row.FindControl("lblRemainReqQty")).Text;
             string JobNoList = ((Label)row.FindControl("lblJobNoList")).Text;
+            string ProductName = ((Label)row.FindControl("lblProductName")).Text;
 
             txtSetQty.Text = TotalSet;
             txtReqQuantity.Text = InwardSet;
             txtJobNos.Text = JobNoList;
+            txtProdName.Text = ProductName;
 
             this.ModalPopupExtender1.Show();
         }
@@ -187,7 +194,6 @@ public partial class Production_DispatchPage : System.Web.UI.Page
                             {
                                 FinalQty += subQty;
                             }
-
                         }
 
                         cmd.Parameters.AddWithValue("@InwardQty", Convert.ToDouble(totalQty));
@@ -199,8 +205,32 @@ public partial class Production_DispatchPage : System.Web.UI.Page
                         cmd.ExecuteNonQuery();
                         Cls_Main.Conn_Close();
                         Cls_Main.Conn_Dispose();
-
                     }
+
+                    DataTable dts = Cls_Main.Read_Table(" SELECT OANumber,Stage,RowMaterial,RawMateReqQTY,(Sum(CAST(InwardQty as int))/(SUM(CAST(TotalQTY AS INT)) /Cast(RawMateReqQTY as int))) AS ReceivedQty, " +
+                       " (Cast(RawMateReqQTY as Int)-Cast(RawMateRemainingReqQty as int)) AS SentQTy," +
+                       " ((Sum(CAST(InwardQty as int))/(SUM(CAST(TotalQTY AS INT)) /Cast(RawMateReqQTY as int))-(Cast(RawMateReqQTY as Int)-Cast(RawMateRemainingReqQty as int))))AS RemainingQTy, " +
+                       " ProjectCode,ProjectName,Count(ID) AS JobCounts, TRY_CAST(SUM(CAST(TotalQTY AS INT)) AS INT) AS TotalQuantity " +
+                       " FROM tbl_NewProductionDTLS AS t1 " +
+                       " WHERE ProjectCode = '" + Session["ProjectCode"].ToString() + "' and Stage='" + Session["Stage"].ToString() + "' and RowMaterial = '" + txtProdName.Text + "' " +
+                       " GROUP BY OANumber, Stage, RowMaterial, RawMateReqQTY, RawMateRemainingReqQty, ProjectCode, ProjectName ");
+
+                    if (dts.Rows.Count > 0)
+                    {
+                        con.Open();
+                        //tbl_DispatchOutwardData
+                        SqlCommand cmd = new SqlCommand("INSERT INTO tbl_DispatchOutwardData (ProductName," +
+                            " TotalSet,InwardSet,OutwardSet,RemainingSet,SentDate,CreatedBy,CretaedDate, " +
+                            " ProjectCode,OaNumber,Remark,ProjectName) Values('" + dts.Rows[0]["RowMaterial"] + "', "+
+                            " '" + dts.Rows[0]["RawMateReqQTY"] + "','" + dts.Rows[0]["ReceivedQty"] + "', "+
+                            " '" + dts.Rows[0]["SentQTy"] + "','" + dts.Rows[0]["RemainingQTy"] + "', "+
+                            " '" + txSentdate.Text + "','" + Session["usercode"].ToString() + "', "+
+                            " '" + DateTime.Now + "','" + dts.Rows[0]["ProjectCode"] + "', "+
+                            " '"+ dts.Rows[0]["OANumber"] + "','"+ txtRemarks.Text + "','"+ dts.Rows[0]["ProjectName"] + "')", con);
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "SuccessResult('Saved Record Successfully And Send to the Next..!!', '" + url + "');", true);
                 }
                 else
@@ -208,6 +238,7 @@ public partial class Production_DispatchPage : System.Web.UI.Page
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "DeleteResult('Please check Outward Quantity is Greater then Inward Quantity..!!', '" + url + "');", true);
                 }
             }
+
             else
             {
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "DeleteResult('Please fill data...........!!', '" + url + "');", true);
@@ -364,7 +395,7 @@ public partial class Production_DispatchPage : System.Web.UI.Page
 
     protected void btnExcel_Click(object sender, EventArgs e)
     {
-       // GetExcellDataCustomerWise();
+        // GetExcellDataCustomerWise();
         Report();
     }
 
@@ -376,8 +407,8 @@ public partial class Production_DispatchPage : System.Web.UI.Page
             using (SqlCommand cmd = new SqlCommand(" SELECT RowMaterial AS ProductName, RawMateReqQTY AS TotalSet, (Sum(CAST(InwardQty as int)) / (SUM(CAST(TotalQTY AS INT)) / Cast(RawMateReqQTY as int))) AS InwardSet, " +
              " (Cast(RawMateReqQTY as Int)-Cast(RawMateRemainingReqQty as int)) AS OutwardSet," +
              " ((Sum(CAST(InwardQty as int))/(SUM(CAST(TotalQTY AS INT)) /Cast(RawMateReqQTY as int))-(Cast(RawMateReqQTY as Int)-Cast(RawMateRemainingReqQty as int))))AS RemainingSet, " +
-             " ProjectCode, Case When RawMateReqQTY = (Cast(RawMateReqQTY as Int)-Cast(RawMateRemainingReqQty as int)) then 'Completed' "+
-             " When ((Sum(CAST(InwardQty as int))/(SUM(CAST(TotalQTY AS INT)) /Cast(RawMateReqQTY as int))-(Cast(RawMateReqQTY as Int)-Cast(RawMateRemainingReqQty as int)))) != 0 then 'In-Process' "+
+             " ProjectCode, Case When RawMateReqQTY = (Cast(RawMateReqQTY as Int)-Cast(RawMateRemainingReqQty as int)) then 'Completed' " +
+             " When ((Sum(CAST(InwardQty as int))/(SUM(CAST(TotalQTY AS INT)) /Cast(RawMateReqQTY as int))-(Cast(RawMateReqQTY as Int)-Cast(RawMateRemainingReqQty as int)))) != 0 then 'In-Process' " +
              " else 'Pending' end ProductStatus " +
 
              " FROM tbl_NewProductionDTLS AS t1 " +
@@ -409,7 +440,7 @@ public partial class Production_DispatchPage : System.Web.UI.Page
                     Response.Buffer = true;
 
                     Response.ContentType = "application/vnd.ms-excel";
-                    Response.AddHeader("content-disposition", "attachment; filename="+dt.Rows[0]["ProjectCode"].ToString()+"_Reports.xls");
+                    Response.AddHeader("content-disposition", "attachment; filename=" + dt.Rows[0]["ProjectCode"].ToString() + "_Reports.xls");
 
 
                     Response.BinaryWrite(bytePdfRep);
@@ -426,4 +457,10 @@ public partial class Production_DispatchPage : System.Web.UI.Page
         }
     }
 
+
+    protected void btnOutwardDetails_Click(object sender, EventArgs e)
+    {
+        string encryptedValue = objcls.encrypt(Session["ProjectCode"].ToString());
+        Response.Redirect("OutwardList.aspx?encryptedValue=" + encryptedValue + "");
+    }
 }
