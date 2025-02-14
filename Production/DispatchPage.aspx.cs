@@ -95,6 +95,7 @@ public partial class Production_DispatchPage : System.Web.UI.Page
             {
                 Label lblReqQty = e.Row.FindControl("lblReqQty") as Label;
                 Label lblSentQty = e.Row.FindControl("lblSentQty") as Label;
+                Label lblRecivedQty = e.Row.FindControl("lblRecivedQty") as Label;
                 Label lblProdStatus = e.Row.FindControl("lblProdStatus") as Label;
                 Label lblRemainingSet = e.Row.FindControl("lblRemainReqQty") as Label;
 
@@ -108,11 +109,15 @@ public partial class Production_DispatchPage : System.Web.UI.Page
                     }
                     else if (lblRemainingSet.Text != "0")
                     {
+                        lblProdStatus.Text = "Ready for Out";
+                        lblProdStatus.ForeColor = System.Drawing.Color.Blue;
+                    }
+                    else if(lblRecivedQty.Text != "0")
+                    {
                         lblProdStatus.Text = "In-Process";
                         lblProdStatus.ForeColor = System.Drawing.Color.Orange;
                     }
-                    else
-                    {
+                    else{
                         lblProdStatus.Text = "Pending";
                         lblProdStatus.ForeColor = System.Drawing.Color.Red;
                     }
