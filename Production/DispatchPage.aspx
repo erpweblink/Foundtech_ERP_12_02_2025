@@ -428,7 +428,7 @@
                 <asp:Panel ID="PopupSendDetail" runat="server">
                     <div class="row container">
                         <div class="col-md-12">
-                            <div style="background-color: #fefefe; width: 539px; height: 465px; padding: 23px 13px; border: 3px solid black;">
+                            <div style="background-color: #fefefe; width: 539px; height: 497px; padding: 23px 13px; border: 3px solid black;">
                                 <div style="background-color: #01a9ac; height: 50px; width: 506px; margin-top: -16px;">
                                     <h4 style="padding: 8px; color: #fff;">Send to Dispatch 
                                     <button type="button" id="Closepophistory1" class="btnclose" style="display: inline-block;" data-dismiss="modal">Close</button></h4>
@@ -460,12 +460,16 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <asp:Label ID="Label7" runat="server" Font-Bold="true" CssClass="form-label">Outward Set:</asp:Label>
-                                                    <asp:TextBox ID="txtEnteredQty" CssClass="form-control" runat="server" OnTextChanged="txtEnteredQty_TextChanged" AutoPostBack="true"></asp:TextBox>
+                                                    <asp:TextBox ID="txtEnteredQty" CssClass="form-control" ValidationGroup="1" runat="server" OnTextChanged="txtEnteredQty_TextChanged" AutoPostBack="true"></asp:TextBox>
+                                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator1" ValidationGroup="1" runat="server" ControlToValidate="txtEnteredQty"
+                                                        ForeColor="Red" ErrorMessage="Please enter Value" Display="Dynamic" SetFocusOnError="true"></asp:RequiredFieldValidator>
                                                 </div>
                                                 <br />
                                                 <div class="col-md-6">
                                                     <asp:Label ID="Label3" runat="server" Font-Bold="true" CssClass="form-label">Outward Date:</asp:Label>
                                                     <asp:TextBox ID="txSentdate" runat="server" ValidationGroup="1" AutoComplete="off" TextMode="Date" CssClass="form-control"></asp:TextBox>
+                                                    <asp:RequiredFieldValidator ID="RequiredFieldValidator5" ValidationGroup="1" runat="server" ControlToValidate="txSentdate"
+                                                        ForeColor="Red" ErrorMessage="Please fill Date" Display="Dynamic" SetFocusOnError="true"></asp:RequiredFieldValidator>
                                                 </div>
                                             </div>
                                             <br />
@@ -477,7 +481,7 @@
                                             <br />
                                             <center>
                                                 <%--  --%>
-                                                <asp:LinkButton runat="server" ID="btnSendDispatch" class="btn btn-success" OnClick="btnsave_Click" OnClientClick="hideButtons();">
+                                                <asp:LinkButton runat="server" ID="btnSendDispatch" class="btn btn-success" OnClick="btnsave_Click" ValidationGroup="1" OnClientClick="hideButtons();">
                                                     <span class="btn-label">
                                                         <i class="fa fa-check"></i>
                                                     </span>
@@ -487,11 +491,11 @@
                                         </div>
                                     </div>
 
-                                    <script type="text/javascript">
+                                    <%-- <script type="text/javascript">
                                         function hideButtons() {
                                             document.getElementById('<%= btnSendDispatch.ClientID %>').style.display = 'none';
                                         }
-                                    </script>
+                                    </script>--%>
                                 </div>
 
                             </div>

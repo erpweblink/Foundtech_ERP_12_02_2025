@@ -1,16 +1,12 @@
-﻿using DocumentFormat.OpenXml.ExtendedProperties;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using System.Web;
-using System.Web.SessionState;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Windows.Threading;
 
 public partial class Production_ProdDTLSProjCodeWise : System.Web.UI.Page
 {
