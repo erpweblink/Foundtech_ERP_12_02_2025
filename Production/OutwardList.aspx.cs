@@ -57,7 +57,10 @@ public partial class Production_OutwardList : System.Web.UI.Page
         try
         {
             using (SqlCommand cmd = new SqlCommand(" SELECT ProjectCode,ProjectName,ProductName,TotalSet," +
-                " InwardSet,OutwardSet,RemainingSet,Convert(nvarchar(10), SentDate, 121) AS SentDate,CreatedBy,Remark FROM tbl_DispatchOutwardData Where ProjectCode ='" + Session["ProjectCode"].ToString() + "' ", con))
+                " InwardSet,OutwardSet,RemainingSet,Convert(nvarchar(10), SentDate, 121) AS SentDate, "+
+                " UM.Username AS CreatedBy,Remark FROM tbl_DispatchOutwardData as DO "+
+                " LEFT JOIN tbl_UserMaster as UM ON UM.UserCode = DO.CreatedBy "+
+                " Where ProjectCode ='" + Session["ProjectCode"].ToString() + "' ", con))
             {
                 DataTable Dt = new DataTable();
                 con.Open();
