@@ -288,6 +288,22 @@
                         <br />
                         <div id="divtable" runat="server">
                             <div class="card">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <asp:Label ID="lblProjCode" runat="server" Font-Bold="true" Text="Project Code" CssClass="form-label"></asp:Label>
+                                            <asp:TextBox ID="txtProjCode" runat="server" Text="" ReadOnly="true" CssClass="form-control"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <asp:Label ID="lblProjName" runat="server" Font-Bold="true" Text="Project Name" CssClass="form-label"></asp:Label>
+                                            <asp:TextBox ID="txtProjName" runat="server" Text="" ReadOnly="true" CssClass="form-control"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <asp:Label ID="lblOaNumber" runat="server" Font-Bold="true" Text="OA Number" CssClass="form-label"></asp:Label>
+                                            <asp:TextBox ID="txtOaNumber" runat="server" Text="" ReadOnly="true" CssClass="form-control"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <div class="table">
@@ -377,6 +393,11 @@
                                                             <asp:Label ID="lblInwardQtylist" runat="server" Text='<%#Eval("InwardQTYlist")%>'></asp:Label>
                                                         </ItemTemplate>
                                                     </asp:TemplateField>
+                                                    <asp:TemplateField HeaderText="PER QTY" HeaderStyle-CssClass="gvhead" Visible="false">
+                                                        <ItemTemplate>
+                                                            <asp:Label ID="lblPerQtylist" runat="server" Text='<%#Eval("PerQTY")%>'></asp:Label>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
                                                     <asp:TemplateField HeaderText="Disc List" HeaderStyle-CssClass="gvhead" Visible="false">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lblDisclist" runat="server" Text='<%#Eval("Disc")%>'></asp:Label>
@@ -447,8 +468,9 @@
                                                 <asp:Label ID="Label2" runat="server" Font-Bold="true" CssClass="form-label">Outward QTY:</asp:Label>
                                                 <asp:TextBox ID="txtoutwardqty" CssClass="form-control" placeholder="Enter Outward QTY" TextMode="Number" runat="server"></asp:TextBox>
                                             </div>
-                                            <p><span style="color: red; font-size: 16px">Note * : <br /><span style="font-size: 15px; color: blue;">1.Quality button show on after all product status is completed.</span> 
-                                            <br /><span style="font-size: 15px; color: blue;">2.Sent Back button show on after all product status is completed.</span> </p>
+                                            <p>
+                                                <span style="color: red; font-size: 16px">Note * : <span style="font-size: 15px; color: blue;">Quality button show on after all product status is completed.</span>
+                                            </p>
                                         </div>
                                         <br />
                                         <div class="col-md-7">
@@ -474,13 +496,13 @@
                                                                 <asp:Label ID="lblDiscr" runat="server" Text='<%# Eval("Discr") %>'></asp:Label>
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
-                                                        <asp:TemplateField HeaderText="Qty">
+                                                        <asp:TemplateField HeaderText="Total Qty">
                                                             <HeaderStyle CssClass="sticky-header" />
                                                             <ItemTemplate>
                                                                 <asp:Label ID="lblQty" runat="server" Text='<%# Eval("Qty") %>'></asp:Label>
                                                             </ItemTemplate>
                                                         </asp:TemplateField>
-                                                        <asp:TemplateField HeaderText="InwardQty">
+                                                        <asp:TemplateField HeaderText="Inward Qty">
                                                             <HeaderStyle CssClass="sticky-header" />
                                                             <ItemTemplate>
                                                                 <asp:Label ID="lblInwardQty" runat="server" Text='<%# Eval("InwardQTYlist") %>'></asp:Label>
@@ -507,7 +529,7 @@
                                     <br />
                                     <center>
                                         <%-- OnClick="btnsendtoback_Click" OnClientClick="hideButtons();" --%>
-                                        <asp:LinkButton runat="server" ID="btnsendtoback" class="btn btn-warning" OnClick="BackModalPopUP">
+                                        <asp:LinkButton runat="server" ID="btnsendtoback" class="btn btn-warning d-none" OnClick="BackModalPopUP">
                                             <span class="btn-label">
                                                 <i class="fa fa-arrow-left"></i>
                                             </span>
@@ -524,7 +546,7 @@
                                     <script type="text/javascript">
                                         function hideButtons() {
                                             document.getElementById('<%= btnsendtoback.ClientID %>').style.display = 'none';
-                                                document.getElementById('<%= btnSendtopro.ClientID %>').style.display = 'none';
+                                            document.getElementById('<%= btnSendtopro.ClientID %>').style.display = 'none';
                                         }
                                     </script>
                                 </div>
@@ -537,8 +559,8 @@
                             // Close the popup
                             $find('<%= ModalPopupHistory.ClientID %>').hide();
 
-                                // Trigger postback to call server-side method
-                                __doPostBack('<%= btnhist.ClientID %>', '');
+                            // Trigger postback to call server-side method
+                            __doPostBack('<%= btnhist.ClientID %>', '');
                         }
                     </script>
                 </asp:Panel>

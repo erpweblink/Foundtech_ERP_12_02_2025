@@ -290,6 +290,22 @@
                         <br />
                         <div id="divtable" runat="server">
                             <div class="card">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <asp:Label ID="lblProjCode" runat="server" Font-Bold="true" Text="Project Code" CssClass="form-label"></asp:Label>
+                                            <asp:TextBox ID="txtProjCode" runat="server" Text="" ReadOnly="true" CssClass="form-control"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <asp:Label ID="lblProjName" runat="server" Font-Bold="true" Text="Project Name" CssClass="form-label"></asp:Label>
+                                            <asp:TextBox ID="txtProjName" runat="server" Text="" ReadOnly="true" CssClass="form-control"></asp:TextBox>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <asp:Label ID="lblOaNumber" runat="server" Font-Bold="true" Text="OA Number" CssClass="form-label"></asp:Label>
+                                            <asp:TextBox ID="txtOaNumber" runat="server" Text="" ReadOnly="true" CssClass="form-control"></asp:TextBox>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <div class="table">
@@ -358,7 +374,7 @@
                                                         <ItemTemplate>
                                                             <asp:Label ID="lblReceivedSet" runat="server" Text='<%#Eval("ReceivedQty")%>'></asp:Label>
                                                         </ItemTemplate>
-                                                    </asp:TemplateField> 
+                                                    </asp:TemplateField>
                                                     <asp:TemplateField HeaderText="Remaining set" HeaderStyle-CssClass="gvhead" Visible="false">
                                                         <ItemTemplate>
                                                             <asp:Label ID="lblRemainingSet" runat="server" Text='<%#Eval("RemainingQTy")%>'></asp:Label>
@@ -460,7 +476,7 @@
                                                     <asp:Label ID="Label2" runat="server" Font-Bold="true" CssClass="form-label">Outward QTY:</asp:Label>
                                                     <asp:TextBox ID="txtoutwardqty" CssClass="form-control" placeholder="Enter Outward QTY" TextMode="Number" runat="server"></asp:TextBox>
                                                 </div>
-                                                <p><span style="color: black; font-size: 17px">Note * : <span style="font-size: 17px; color:blue;">Dispatch button show on after all product status is completed.</span> </p>
+                                                <p><span style="color: black; font-size: 17px">Note * : <span style="font-size: 17px; color: blue;">Dispatch button show on after all product status is completed.</span> </p>
                                             </div>
                                             <br />
                                             <div class="col-md-7">

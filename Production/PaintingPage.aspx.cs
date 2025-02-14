@@ -49,7 +49,6 @@ public partial class Production_PaintingPage : System.Web.UI.Page
 
     private void FillGrid()
     {
-
         DataTable dt = Cls_Main.Read_Table(@"SELECT  t1.OANumber, t1.Stage, RowMaterial, RawMateReqQTY, RawMateRemainingReqQty,
         (Sum(CAST(InwardQty as int)) / (SUM(CAST(TotalQTY AS INT)) / Cast(RawMateReqQTY as int))) AS ReceivedQty,
         (Cast(RawMateReqQTY as Int) - Cast(RawMateRemainingReqQty as int)) AS SentQTy,
@@ -72,6 +71,11 @@ public partial class Production_PaintingPage : System.Web.UI.Page
            WHERE t4.RowMaterial = t1.RowMaterial And t4.Stage = t1.Stage And t4.OANumber = t1.OANumber
            FOR XML PATH('')), 1, 1, '') AS InwardQTYlist,
 
+          STUFF((SELECT ',' + CAST((cast(TotalQTY AS INT)/CAST(RawMateReqQTY AS INT)) AS NVARCHAR)
+	        FROM tbl_NewProductionDTLS t6
+			WHERE t6.RowMaterial = t1.RowMaterial AND t6.Stage = t1.Stage AND t6.OANumber = t1.OANumber
+			FOR XML PATH('')), 1, 1, '') AS PerQTY,
+
            STUFF((SELECT ',' + CAST(Discription AS NVARCHAR)
            FROM tbl_NewProductionDTLS t5
            WHERE  t5.RowMaterial = t1.RowMaterial And t5.Stage = t1.Stage And t5.OANumber = t1.OANumber
@@ -83,6 +87,10 @@ public partial class Production_PaintingPage : System.Web.UI.Page
           " order by SentQTy desc, RemainingQTy desc ");
 
         dt.Columns.Add("ProductStatus");
+
+        txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
+        txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
+        txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
 
         GroupRecords.DataSource = dt;
         GroupRecords.DataBind();
@@ -142,6 +150,7 @@ public partial class Production_PaintingPage : System.Web.UI.Page
             string QtyList = ((Label)row.FindControl("lblTotalQTYlist")).Text;
             string DiscList = ((Label)row.FindControl("lblDisclist")).Text;
             string InwardQtyList = ((Label)row.FindControl("lblInwardQtylist")).Text;
+            string PerQtylist = ((Label)row.FindControl("lblPerQtylist")).Text;
 
             int divVal = Convert.ToInt32(TotalQty) / Convert.ToInt32(reqQty);
 
@@ -151,8 +160,7 @@ public partial class Production_PaintingPage : System.Web.UI.Page
             txtinwardqty.Text = divVal.ToString();
             txttotalqty.Text = TotalQty;
             txtJobList.Text = JobNoList;
-            txtoutwardqty.Text = TotalQty;
-
+           
             // txtpending.Text = "0";
             txtoutwardqty.Text = TotalQty;
 
@@ -160,6 +168,7 @@ public partial class Production_PaintingPage : System.Web.UI.Page
             string[] Qty = QtyList.Split(',');
             string[] Disc = DiscList.Split(',');
             string[] InwardQty = InwardQtyList.Split(',');
+            string[] PerQty = PerQtylist.Split(',');
             DataTable Dt = new DataTable();
             Dt.Columns.AddRange(new DataColumn[7] { new DataColumn("Checkbox"), new DataColumn("JobNo"), new DataColumn("Qty"), new DataColumn("Discr"), new DataColumn("InwardQTYlist"), new DataColumn("PerSetQty"), new DataColumn("Status") });
             int rowCount = jobsNo.Length > Qty.Length ? jobsNo.Length : Qty.Length;
@@ -170,10 +179,10 @@ public partial class Production_PaintingPage : System.Web.UI.Page
                 string qty = Qty.Length > i ? Qty[i] : string.Empty;
                 string disc = Disc.Length > i ? Disc[i] : string.Empty;
                 string inwardQty = InwardQty.Length > i ? InwardQty[i] : string.Empty;
+                string perqty = PerQty.Length > i ? PerQty[i] : string.Empty;
 
-                int val = Convert.ToInt32(qty) / Convert.ToInt32(reqQty);
 
-                Dt.Rows.Add("", jobNo, qty, disc, inwardQty, val.ToString(), "");
+                Dt.Rows.Add("", jobNo, qty, disc, inwardQty, perqty, "");
             }
 
             if (Dt.Rows.Count > 0)
@@ -396,24 +405,33 @@ public partial class Production_PaintingPage : System.Web.UI.Page
                 Label lblStatus = e.Row.FindControl("lblStatus") as Label;
                 Label lblQty = e.Row.FindControl("lblQty") as Label;
                 Label lblInwardQty = e.Row.FindControl("lblInwardQty") as Label;
+
+                Label lblQtyPerSet = e.Row.FindControl("lblQtyPerSet") as Label;
+
                 CheckBox checkBox = e.Row.FindControl("lblCheckBox") as CheckBox;
                 checkBox.Enabled = false;
-                if (lblInwardQty != null)
+                if (lblInwardQty != null && lblQty != null)
                 {
                     int InwardQty = Convert.ToInt32(lblInwardQty.Text);
                     int Qty = Convert.ToInt32(lblQty.Text);
+                    int QtyPerSet = Convert.ToInt32(lblQtyPerSet.Text);
 
-                    // Update the status text based on the status code
                     if (InwardQty == Qty)
                     {
                         lblStatus.Text = "Completed";
                         lblStatus.ForeColor = System.Drawing.Color.Green;
                         checkBox.Checked = true;
                     }
-                    else
+                    else if(InwardQty >= QtyPerSet)
                     {
                         lblStatus.Text = "In-Process";
                         lblStatus.ForeColor = System.Drawing.Color.Orange;
+                        checkBox.Checked = true;
+                    }
+                    else
+                    {
+                        lblStatus.Text = "Pending";
+                        lblStatus.ForeColor = System.Drawing.Color.Red;
                     }
                 }
 
@@ -440,6 +458,57 @@ public partial class Production_PaintingPage : System.Web.UI.Page
         }
         txtJobNos.Text = txtJobList.Text;
         this.ModalPopupExtender1.Show();
+
+        /* New Function testing code by Nikhil 
+         * DataTable dt = new DataTable();
+        dt.Columns.AddRange(new DataColumn[7]
+        { new DataColumn("JobNo"),new DataColumn("Discr"), new DataColumn("Qty"), new DataColumn("InwardQTYlist"),
+            new DataColumn("PerSetQty"),new DataColumn("OutwardQTYlist"), new DataColumn("Status")
+        });
+        int MainValue = 0;
+        for (int i = 1; i <= Convert.ToInt32(txtReqQuantity.Text); i++)
+        {
+
+            int vl = 0;
+            foreach (GridViewRow row in grdgrid.Rows)
+            {
+                vl = 0;
+                if (row.RowType == DataControlRowType.DataRow)
+                {
+                    string jobNo = ((Label)row.FindControl("lblJobNo")).Text;
+                    string discr = ((Label)row.FindControl("lblDiscr")).Text;
+                    int qty = Convert.ToInt32(((Label)row.FindControl("lblQty")).Text);
+                    int inwardQty = Convert.ToInt32(((Label)row.FindControl("lblInwardQty")).Text);
+                    int outwardQty = Convert.ToInt32(((Label)row.FindControl("lblOutwardQty")).Text);
+                    int perSetQty = Convert.ToInt32(((Label)row.FindControl("lblQtyPerSet")).Text);
+                    string status = ((Label)row.FindControl("lblStatus")).Text;
+
+                    if (inwardQty >= perSetQty)
+                    {
+                        dt.Rows.Add(jobNo, discr, qty, inwardQty - perSetQty, perSetQty,outwardQty, status);
+                        vl = 1;
+                    }
+                }
+            }
+            if (vl > 0)
+            {
+                grdgrid.DataSource = null;
+                grdgrid.DataSource = dt;
+                grdgrid.DataBind();
+                ++MainValue;
+            }
+        }
+        if (MainValue != 0)
+        {
+            if (MainValue == 1)
+            {
+                txtEnteredQty.Text = MainValue.ToString();
+                txtEnteredQty.ReadOnly = true;
+            }
+          
+                txtJobNos.Text = txtJobList.Text;
+            this.ModalPopupExtender1.Show();
+        }*/
     }
     public void BackModalPopUP(object sender, EventArgs e)
     {
@@ -463,6 +532,7 @@ public partial class Production_PaintingPage : System.Web.UI.Page
         if (txt.Text != "")
         {
             int enteredText = Convert.ToInt32(txt.Text);
+
             if (enteredText > Convert.ToInt32(txtReqQuantity.Text))
             {
                 txt.Text = "";
