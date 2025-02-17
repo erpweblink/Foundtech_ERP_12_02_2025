@@ -452,6 +452,11 @@
                                             <ItemTemplate>
                                                 <asp:Label ID="lblCompletedQtySum" runat="server" Text='<%#Eval("CompletedQuantitySum")%>'></asp:Label>
                                             </ItemTemplate>
+                                        </asp:TemplateField> 
+                                        <asp:TemplateField HeaderText="Outward List" HeaderStyle-CssClass="gvhead">
+                                            <ItemTemplate>
+                                                <asp:LinkButton runat="server" ID="btnOutwardList" ToolTip="See Outward List" CommandName="ShowOutward" CommandArgument='<%# Eval("ProjectCode") %>' ><i class="fa fa-table" style="font-size: 26px; color: dodgerblue;"></i></i></asp:LinkButton>&nbsp;&nbsp;
+                                            </ItemTemplate>
                                         </asp:TemplateField>
                                         <asp:TemplateField HeaderText="ACTION" ItemStyle-Width="120" HeaderStyle-CssClass="gvhead">
                                             <ItemTemplate>

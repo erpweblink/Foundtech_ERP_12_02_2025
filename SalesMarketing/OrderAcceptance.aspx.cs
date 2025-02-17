@@ -529,7 +529,11 @@ public partial class SalesMarketing_OrderAcceptance : System.Web.UI.Page
                         cmd.Parameters.AddWithValue("@ProjectCode", txtprojectCode.Text);
                         cmd.Parameters.AddWithValue("@ProjectName", txtprojectName.Text);
                         cmd.Parameters.AddWithValue("@CreatedBy", Session["UserCode"].ToString());
-                        cmd.Parameters.AddWithValue("@CreatedOn", DateTime.Now);
+                        DateTime utcNow = DateTime.UtcNow; // Get UTC time
+                        DateTime istTime = utcNow.AddMinutes(330); // Add 5 hours 30 minutes to convert to IST
+                        cmd.Parameters.AddWithValue("@CreatedOn", istTime);
+
+                       // cmd.Parameters.AddWithValue("@CreatedOn", DateTime.Now);
 
                         if (PdfFile.HasFile)
                         {

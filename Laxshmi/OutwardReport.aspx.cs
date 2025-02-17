@@ -483,4 +483,100 @@ public partial class Laxshmi_OutwardReport : System.Web.UI.Page
     {
         GridView();
     }
+
+    protected void GVfollowup_RowCommand(object sender, GridViewCommandEventArgs e)
+    {
+        if (e.CommandName == "Edit")
+        {
+            string rowIndex = e.CommandArgument.ToString();
+
+            GridViewRow row = (GridViewRow)((LinkButton)e.CommandSource).NamingContainer;
+            GridView gvPurchase = (GridView)row.FindControl("GVfollowup");
+
+
+            string OutwardQty = ((Label)row.FindControl("lblOutwardQty")).Text;
+            string CustomerName = ((Label)row.FindControl("lblCompanyName")).Text;
+            string VehicleNo = ((Label)row.FindControl("lblVehicleNo")).Text;
+            string RowMaterial = ((Label)row.FindControl("lblRowMaterial")).Text;
+            string OutwardNo = ((Label)row.FindControl("lblInwardNo")).Text;
+            string Weight = ((Label)row.FindControl("lblWeight")).Text;
+            string DeliveryNoteno = ((Label)row.FindControl("lblDeliveryNoteno")).Text;
+            string DeliveryNotedate = ((Label)row.FindControl("lblDeliveryNotedate")).Text;
+            string ReferenceNo = ((Label)row.FindControl("lbldReferenceNo")).Text;
+            string ReferenceDate = ((Label)row.FindControl("lblReferenceDate")).Text;
+
+            DateTime ffff1 = Convert.ToDateTime(ReferenceDate);
+            txtReferenceDate.Text = ffff1.ToString("yyyy-MM-dd");
+
+            DateTime ffff2 = Convert.ToDateTime(DeliveryNotedate);
+            txtDeliverynotedate.Text = ffff2.ToString("yyyy-MM-dd");
+
+
+
+            txtInwardnopop.Text = OutwardNo;
+            txtcustomernamepop.Text = CustomerName;
+            txtrowmaterialpop.Text = RowMaterial;
+            txtcustomernamepop.Text = CustomerName;
+            txtVehicleno.Text = VehicleNo;
+            txtWeight.Text = Weight;
+            TextBox1.Text = DeliveryNoteno;
+           // txtDeliverynotedate.Text = DeliveryNotedate;
+            txtrefrenceno.Text = ReferenceNo;
+           // txtReferenceDate.Text = ReferenceDate;
+            txtoutwardqty.Text = OutwardQty;
+
+            txtinwardqty.Text = OutwardQty;
+
+            this.ModalPopupHistory.Show();
+        }
+    }
+
+    protected void GVfollowup_RowEditing(object sender, GridViewEditEventArgs e)
+    {
+
+    }
+
+    protected void btnsave_Click(object sender, EventArgs e)
+    {
+        try
+        {
+           
+                double outtotal = Convert.ToDouble(txtoutwardqty.Text);
+    
+                if (outtotal <= Convert.ToDouble(txtinwardqty.Text))
+                {
+
+                    Cls_Main.Conn_Open();
+                    SqlCommand cmd = new SqlCommand("SP_Laxshmidetails", Cls_Main.Conn);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Mode", "UpdateOutwardQTY");
+                    cmd.Parameters.AddWithValue("@OutwardNo", txtInwardnopop.Text);
+                    cmd.Parameters.AddWithValue("@OutwardQty", Convert.ToString(outtotal));
+                    cmd.Parameters.AddWithValue("@Description", txtRemarks.Text);
+                    cmd.Parameters.AddWithValue("@Vehicleno", txtVehicleno.Text);
+                    cmd.Parameters.AddWithValue("@Weight", txtWeight.Text);
+                    cmd.Parameters.AddWithValue("@DeliveryNotedate", txtDeliverynotedate.Text);
+                    cmd.Parameters.AddWithValue("@DeliveryNoteno", TextBox1.Text);
+                    cmd.Parameters.AddWithValue("@ReferenceNo", txtrefrenceno.Text);
+                    cmd.Parameters.AddWithValue("@ReferenceDate", txtReferenceDate.Text);
+
+                    cmd.ExecuteNonQuery();
+                    Cls_Main.Conn_Close();
+                    Cls_Main.Conn_Dispose();
+
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('Record Updated Successfully ..!!');window.location='OutwardReport.aspx';", true);
+                }
+                else
+                {
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", "alert('Outward quantity not matched ..!!');", true);
+                    this.ModalPopupHistory.Show();
+                }
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+    }
+
 }

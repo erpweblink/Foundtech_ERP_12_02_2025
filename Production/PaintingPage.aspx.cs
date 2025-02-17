@@ -112,9 +112,12 @@ public partial class Production_PaintingPage : System.Web.UI.Page
           " order by SentQTy desc, RemainingQTy desc ");
 
 
-        txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
-        txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
-        txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
+        if (dt.Rows.Count > 0)
+        {
+            txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
+            txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
+            txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
+        }
 
         GroupRecords.DataSource = dt;
         GroupRecords.DataBind();

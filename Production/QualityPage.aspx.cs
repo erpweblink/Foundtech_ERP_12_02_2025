@@ -93,10 +93,12 @@ public partial class Production_QualityPage : System.Web.UI.Page
             " GROUP BY t1.OANumber, t1.Stage, RowMaterial,RawMateReqQTY,RawMateRemainingReqQty, t1.ProjectCode,t1.ProjectName,t7.FilePath  " +
             " order by SentQTy desc, RemainingQTy desc ");
 
-
-        txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
-        txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
-        txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
+        if (dt.Rows.Count > 0)
+        {
+            txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
+            txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
+            txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
+        }
 
         GroupRecords.DataSource = dt;
         GroupRecords.DataBind();
