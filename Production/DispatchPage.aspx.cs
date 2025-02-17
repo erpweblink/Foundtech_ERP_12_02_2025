@@ -78,9 +78,12 @@ public partial class Production_DispatchPage : System.Web.UI.Page
             " GROUP BY OANumber, Stage, RowMaterial, RawMateReqQTY, RawMateRemainingReqQty, ProjectCode, ProjectName " +
             " order by SentQTy desc, RemainingQTy desc ");
 
-        txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
-        txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
-        txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
+        if (dt.Rows.Count > 0)
+        {
+            txtProjCode.Text = dt.Rows[0]["ProjectCode"].ToString();
+            txtProjName.Text = dt.Rows[0]["ProjectName"].ToString();
+            txtOaNumber.Text = dt.Rows[0]["OaNumber"].ToString();
+        }
 
         dt.Columns.Add("ProductStatus");
         GroupRecords.DataSource = dt;

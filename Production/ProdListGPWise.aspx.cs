@@ -485,6 +485,11 @@ public partial class Production_ProdListGPWise : System.Web.UI.Page
             this.ModalPopupHistory.Show();
 
         }
+        if (e.CommandName == "ShowOutward")
+        {
+            string encryptedValue = objcls.encrypt(e.CommandArgument.ToString());
+            Response.Redirect("OutwardList.aspx?encryptedValue=" + encryptedValue + "");
+        }
         if (e.CommandName == "SendMail")
         {
             string Customer = e.CommandArgument.ToString();
